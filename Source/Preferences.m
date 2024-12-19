@@ -1,4 +1,6 @@
-@implementation Preferences
+@implementation Preferences {
+	BOOL _hasCreatedCountdown;
+}
 
 - (instancetype)init {
 	self = [super init];
@@ -19,11 +21,16 @@
 
 - (void)setCountdownDate:(NSDate *)countdownDate {
 	_countdownDate = countdownDate;
+	_hasCreatedCountdown = YES;
 	[self preferencesDidChange];
 }
 
 - (void)preferencesDidChange {
 	[NSNotificationCenter.defaultCenter postNotificationName:PreferencesDidChangeNotification object:nil];
+}
+
+- (BOOL)hasCreatedCountdown {
+	return _hasCreatedCountdown;
 }
 
 @end

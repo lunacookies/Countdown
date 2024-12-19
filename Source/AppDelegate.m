@@ -240,7 +240,11 @@
 	[menu addItemWithTitle:@"Settings…" action:@selector(showSettings:) keyEquivalent:@","];
 	_statusItem.menu = menu;
 
-	_statusItem.button.title = @"No Countdowns";
+	[self preferencesDidChange:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+	                                       selector:@selector(preferencesDidChange:)
+	                                           name:PreferencesDidChangeNotification
+	                                         object:nil];
 }
 
 - (void)editCountdowns:(id)sender {
@@ -251,6 +255,21 @@
 - (void)showSettings:(id)sender {
 	[_settingsWindowController showWindow:nil];
 	[NSApp activate];
+}
+
+- (void)preferencesDidChange:(id)sender {
+	Preferences *preferences = Preferences.sharedPreferences;
+	if (!preferences.hasCreatedCountdown) {
+		_statusItem.button.title = @"No Countdowns";
+		return;
+	}
+
+	NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
+	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
+	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
+	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:preferences.countdownDate];
+	_statusItem.button.title = [NSString stringWithFormat:@"%@ left", intervalString];
 }
 
 @end

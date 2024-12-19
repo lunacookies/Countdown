@@ -14,7 +14,6 @@
 	self.window.title = @"Edit Countdowns";
 
 	_datePicker = [[NSDatePicker alloc] init];
-	_datePicker.dateValue = Preferences.sharedPreferences.countdownDate;
 	_datePicker.datePickerElements = NSDatePickerElementFlagYearMonthDay;
 	_datePicker.presentsCalendarOverlay = YES;
 	_datePicker.target = self;
@@ -42,6 +41,7 @@
 }
 
 - (void)windowDidLoad {
+	[self preferencesDidChange:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
 	                                       selector:@selector(preferencesDidChange:)
 	                                           name:PreferencesDidChangeNotification
