@@ -1,0 +1,16 @@
+{
+	"CFBundleInfoDictionaryVersion": "6.0",
+	"CFBundleIdentifier": "org.xoria.Countdown",
+	"CFBundlePackageType": "APPL",
+	"CFBundleExecutable": "Countdown",
+
+	"CFBundleName": "Countdown",
+	"CFBundleDisplayName": "Countdown",
+
+	"CFBundleDevelopmentRegion": "en",
+	"CFBundleShortVersionString": "1.0.0",
+	"CFBundleVersion": "1.0.0",
+	"NSHumanReadableCopyright": "Copyright © 2024 Luna Razzaghipour",
+
+	"LSUIElement": true
+}

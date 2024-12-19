@@ -1,0 +1,2 @@
+@interface EditWindowController : NSWindowController
+@end
