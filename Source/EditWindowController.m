@@ -53,7 +53,11 @@
 }
 
 - (void)preferencesDidChange:(id)sender {
-	_datePicker.dateValue = Preferences.sharedPreferences.countdownDate;
+	NSDate *date = Preferences.sharedPreferences.countdownDate;
+	if (date == nil) {
+		date = [NSDate date];
+	}
+	_datePicker.dateValue = date;
 }
 
 @end

@@ -1,12 +1,6 @@
-@implementation Preferences {
-	BOOL _hasCreatedCountdown;
-}
+@implementation Preferences
 
-- (instancetype)init {
-	self = [super init];
-	_countdownDate = [NSDate date];
-	return self;
-}
+static NSString *const CountdownDateKey = @"CountdownDate";
 
 + (Preferences *)sharedPreferences {
 	static Preferences *preferences = nil;
@@ -19,18 +13,17 @@
 	return preferences;
 }
 
+- (NSDate *)countdownDate {
+	return [NSUserDefaults.standardUserDefaults objectForKey:CountdownDateKey];
+}
+
 - (void)setCountdownDate:(NSDate *)countdownDate {
-	_countdownDate = countdownDate;
-	_hasCreatedCountdown = YES;
+	[NSUserDefaults.standardUserDefaults setObject:countdownDate forKey:CountdownDateKey];
 	[self preferencesDidChange];
 }
 
 - (void)preferencesDidChange {
 	[NSNotificationCenter.defaultCenter postNotificationName:PreferencesDidChangeNotification object:nil];
-}
-
-- (BOOL)hasCreatedCountdown {
-	return _hasCreatedCountdown;
 }
 
 @end
