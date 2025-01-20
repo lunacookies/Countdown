@@ -48,6 +48,10 @@
 	                                         object:nil];
 }
 
+- (void)dealloc {
+	[NSNotificationCenter.defaultCenter removeObserver:self name:PreferencesDidChangeNotification object:nil];
+}
+
 - (void)datePickerValueDidChange:(NSDatePicker *)sender {
 	Preferences.sharedPreferences.countdownDate = _datePicker.dateValue;
 }
