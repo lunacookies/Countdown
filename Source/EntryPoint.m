@@ -7,11 +7,13 @@ static const NSNotificationName PreferencesDidChangeNotification =
 #include "Preferences.h"
 #include "EditWindowController.h"
 #include "SettingsWindowController.h"
+#include "CountdownEditorViewController.h"
 
 #include "AppDelegate.m"
 #include "Preferences.m"
 #include "EditWindowController.m"
 #include "SettingsWindowController.m"
+#include "CountdownEditorViewController.m"
 
 int main(void) {
 	[NSApplication sharedApplication];

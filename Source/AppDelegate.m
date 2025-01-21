@@ -257,7 +257,7 @@
 	[NSApp activate];
 }
 
-- (void)preferencesDidChange:(id)sender {
+- (void)preferencesDidChange:(NSNotification *)notification {
 	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
 
 	if (countdowns.count == 0) {
