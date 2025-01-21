@@ -32,6 +32,9 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	NSScrollView *scrollView = [[NSScrollView alloc] init];
 	scrollView.documentView = _tableView;
 
+	NSBox *box = [[NSBox alloc] init];
+	box.titlePosition = NSNoTitle;
+
 	_editorViewController = [[CountdownEditorViewController alloc] init];
 	_editorViewController.view.wantsLayer = YES;
 	_editorViewController.view.alphaValue = 0;
@@ -43,13 +46,25 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	_noSelectionLabel.textColor = NSColor.placeholderTextColor;
 	_noSelectionLabel.alignment = NSTextAlignmentCenter;
 
-	NSView *contentView = self.window.contentView;
-	scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 	_editorViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 	_noSelectionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	[box addSubview:_editorViewController.view];
+	[box addSubview:_noSelectionLabel];
+	[NSLayoutConstraint activateConstraints:@[
+		[_editorViewController.view.topAnchor constraintEqualToAnchor:box.topAnchor],
+		[_editorViewController.view.bottomAnchor constraintEqualToAnchor:box.bottomAnchor],
+		[_editorViewController.view.leadingAnchor constraintEqualToAnchor:box.leadingAnchor],
+		[_editorViewController.view.trailingAnchor constraintEqualToAnchor:box.trailingAnchor],
+		[_noSelectionLabel.leadingAnchor constraintEqualToAnchor:_editorViewController.view.leadingAnchor],
+		[_noSelectionLabel.trailingAnchor constraintEqualToAnchor:_editorViewController.view.trailingAnchor],
+		[_noSelectionLabel.centerYAnchor constraintEqualToAnchor:_editorViewController.view.centerYAnchor],
+	]];
+
+	NSView *contentView = self.window.contentView;
+	scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+	box.translatesAutoresizingMaskIntoConstraints = NO;
 	[contentView addSubview:scrollView];
-	[contentView addSubview:_editorViewController.view];
-	[contentView addSubview:_noSelectionLabel];
+	[contentView addSubview:box];
 
 	NSLayoutGuide *guide = contentView.layoutMarginsGuide;
 	[NSLayoutConstraint activateConstraints:@[
@@ -59,14 +74,10 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 		[_tableView.widthAnchor constraintEqualToConstant:200],
 		[_tableView.heightAnchor constraintEqualToConstant:300],
 
-		[_editorViewController.view.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[_editorViewController.view.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
-		[_editorViewController.view.leadingAnchor constraintEqualToAnchor:scrollView.trailingAnchor constant:10],
-		[_editorViewController.view.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
-
-		[_noSelectionLabel.leadingAnchor constraintEqualToAnchor:_editorViewController.view.leadingAnchor],
-		[_noSelectionLabel.trailingAnchor constraintEqualToAnchor:_editorViewController.view.trailingAnchor],
-		[_noSelectionLabel.centerYAnchor constraintEqualToAnchor:_editorViewController.view.centerYAnchor],
+		[box.topAnchor constraintEqualToAnchor:guide.topAnchor],
+		[box.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
+		[box.leadingAnchor constraintEqualToAnchor:scrollView.trailingAnchor constant:10],
+		[box.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
 	]];
 
 	[self.window layoutIfNeeded];
