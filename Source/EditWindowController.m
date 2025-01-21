@@ -1,5 +1,6 @@
 @implementation EditWindowController {
 	NSDatePicker *_datePicker;
+	Countdown *_countdown;
 }
 
 - (instancetype)init {
@@ -41,7 +42,14 @@
 }
 
 - (void)windowDidLoad {
+	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
+	if (countdowns.count > 0) {
+		_countdown = countdowns[0];
+	} else {
+		_countdown = [Preferences.sharedPreferences addCountdown];
+	}
 	[self preferencesDidChange:nil];
+
 	[NSNotificationCenter.defaultCenter addObserver:self
 	                                       selector:@selector(preferencesDidChange:)
 	                                           name:PreferencesDidChangeNotification
@@ -53,15 +61,11 @@
 }
 
 - (void)datePickerValueDidChange:(NSDatePicker *)sender {
-	Preferences.sharedPreferences.countdownDate = _datePicker.dateValue;
+	_countdown.date = _datePicker.dateValue;
 }
 
 - (void)preferencesDidChange:(id)sender {
-	NSDate *date = Preferences.sharedPreferences.countdownDate;
-	if (date == nil) {
-		date = [NSDate date];
-	}
-	_datePicker.dateValue = date;
+	_datePicker.dateValue = _countdown.date;
 }
 
 @end

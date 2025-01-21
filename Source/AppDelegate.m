@@ -258,17 +258,20 @@
 }
 
 - (void)preferencesDidChange:(id)sender {
-	NSDate *countdownDate = Preferences.sharedPreferences.countdownDate;
-	if (countdownDate == nil) {
+	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
+
+	if (countdowns.count == 0) {
 		_statusItem.button.title = @"No Countdowns";
 		return;
 	}
+
+	Countdown *countdown = countdowns[0];
 
 	NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
 	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
 	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
 	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdownDate];
+	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdown.date];
 	_statusItem.button.title = [NSString stringWithFormat:@"%@ left", intervalString];
 }
 
