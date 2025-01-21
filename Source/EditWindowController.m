@@ -31,6 +31,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 	NSScrollView *scrollView = [[NSScrollView alloc] init];
 	scrollView.documentView = _tableView;
+	scrollView.borderType = NSLineBorder;
 
 	NSBox *box = [[NSBox alloc] init];
 	box.titlePosition = NSNoTitle;
