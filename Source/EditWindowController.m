@@ -60,22 +60,31 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 		[_noSelectionLabel.centerYAnchor constraintEqualToAnchor:_editorViewController.view.centerYAnchor],
 	]];
 
+	NSButton *addButton = [NSButton buttonWithImage:[NSImage imageNamed:NSImageNameAddTemplate]
+	                                         target:self
+	                                         action:@selector(addCountdown:)];
+
 	NSView *contentView = self.window.contentView;
 	scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 	box.translatesAutoresizingMaskIntoConstraints = NO;
+	addButton.translatesAutoresizingMaskIntoConstraints = NO;
 	[contentView addSubview:scrollView];
 	[contentView addSubview:box];
+	[contentView addSubview:addButton];
 
 	NSLayoutGuide *guide = contentView.layoutMarginsGuide;
 	[NSLayoutConstraint activateConstraints:@[
 		[scrollView.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[scrollView.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
 		[scrollView.leadingAnchor constraintEqualToAnchor:guide.leadingAnchor],
 		[_tableView.widthAnchor constraintEqualToConstant:200],
 		[_tableView.heightAnchor constraintEqualToConstant:300],
 
-		[box.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[box.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
+		[addButton.topAnchor constraintEqualToAnchor:scrollView.bottomAnchor constant:10],
+		[addButton.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
+		[addButton.leadingAnchor constraintEqualToAnchor:scrollView.leadingAnchor],
+
+		[box.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
+		[box.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
 		[box.leadingAnchor constraintEqualToAnchor:scrollView.trailingAnchor constant:10],
 		[box.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
 	]];
@@ -96,9 +105,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 }
 
 - (void)preferencesDidChange:(NSNotification *)notification {
-	NSIndexSet *rowIndexes = [NSIndexSet indexSetWithIndex:0];
-	NSIndexSet *columnIndexes = [NSIndexSet indexSetWithIndex:0];
-	[_tableView reloadDataForRowIndexes:rowIndexes columnIndexes:columnIndexes];
+	[_tableView reloadData];
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
@@ -151,6 +158,10 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
 	return Preferences.sharedPreferences.countdowns[(NSUInteger)row];
+}
+
+- (void)addCountdown:(NSButton *)addButton {
+	[Preferences.sharedPreferences addCountdown];
 }
 
 @end
