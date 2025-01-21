@@ -9,13 +9,24 @@
 @end
 
 @implementation Countdown {
+	NSString *_title;
 	NSDate *_date;
 }
 
 - (instancetype)init {
 	self = [super init];
+	_title = @"";
 	_date = [NSDate date];
 	return self;
+}
+
+- (NSString *)title {
+	return _title;
+}
+
+- (void)setTitle:(NSString *)title {
+	_title = [title copy];
+	[Preferences.sharedPreferences didChange];
 }
 
 - (NSDate *)date {
@@ -31,6 +42,7 @@
 	return [self init];
 }
 
+static NSString *const TitleKey = @"Title";
 static NSString *const DateKey = @"Date";
 
 + (instancetype)countdownWithPropertyList:(id)propertyList {
@@ -38,13 +50,14 @@ static NSString *const DateKey = @"Date";
 	NSAssert([propertyList isKindOfClass:[NSDictionary class]], @"property list must be dictionary");
 	NSDictionary<NSString *, id> *dictionary = propertyList;
 
+	countdown->_title = dictionary[TitleKey];
 	countdown->_date = dictionary[DateKey];
 
 	return countdown;
 }
 
 - (id)propertyList {
-	return @{DateKey : _date};
+	return @{TitleKey : _title, DateKey : _date};
 }
 
 @end

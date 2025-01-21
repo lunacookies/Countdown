@@ -197,7 +197,14 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 	NSAssert([objectValue isKindOfClass:[Countdown class]], @"CountdownCellView objectValue must be Countdown");
 	Countdown *countdown = objectValue;
-	_label.stringValue = [NSString stringWithFormat:@"%@", countdown.date];
+	if (countdown.title.length > 0) {
+		_label.stringValue = countdown.title;
+	} else {
+		NSString *dateString = [NSDateFormatter localizedStringFromDate:countdown.date
+		                                                      dateStyle:NSDateFormatterMediumStyle
+		                                                      timeStyle:NSDateFormatterNoStyle];
+		_label.stringValue = [NSString stringWithFormat:@"Countdown on %@", dateString];
+	}
 }
 
 @end

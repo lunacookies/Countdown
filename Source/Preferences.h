@@ -1,6 +1,7 @@
 @interface Countdown : NSObject
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+@property(nonatomic, copy) NSString *title;
 @property(nonatomic) NSDate *date;
 @end
 
