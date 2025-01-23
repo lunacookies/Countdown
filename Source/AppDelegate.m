@@ -10,221 +10,115 @@
 	NSMenu *mainMenu = [[NSMenu alloc] initWithTitle:@"Main Menu"];
 
 	{
-		NSMenuItem *appMenuItem = [[NSMenuItem alloc] initWithTitle:displayName action:nil keyEquivalent:@""];
-		[mainMenu addItem:appMenuItem];
-
+		NSMenuItem *appMenuItem = [mainMenu addItemWithTitle:displayName action:nil keyEquivalent:@""];
 		NSMenu *appMenu = [[NSMenu alloc] initWithTitle:displayName];
 		appMenuItem.submenu = appMenu;
 
-		NSString *aboutMenuItemTitle = [NSString stringWithFormat:@"About %@", displayName];
-		NSMenuItem *aboutMenuItem = [[NSMenuItem alloc] initWithTitle:aboutMenuItemTitle
-		                                                       action:@selector(orderFrontStandardAboutPanel:)
-		                                                keyEquivalent:@""];
-		[appMenu addItem:aboutMenuItem];
+		[appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", displayName]
+		                   action:@selector(orderFrontStandardAboutPanel:)
+		            keyEquivalent:@""];
 
 		[appMenu addItem:[NSMenuItem separatorItem]];
-
-		NSMenuItem *settingsMenuItem = [[NSMenuItem alloc] initWithTitle:@"Settings…" action:nil keyEquivalent:@","];
-		[appMenu addItem:settingsMenuItem];
-
+		[appMenu addItemWithTitle:@"Settings…" action:nil keyEquivalent:@","];
 		[appMenu addItem:[NSMenuItem separatorItem]];
 
-		NSMenuItem *servicesMenuItem = [[NSMenuItem alloc] initWithTitle:@"Services" action:nil keyEquivalent:@""];
-		[appMenu addItem:servicesMenuItem];
-
+		NSMenuItem *servicesMenuItem = [appMenu addItemWithTitle:@"Services" action:nil keyEquivalent:@""];
 		NSMenu *servicesMenu = [[NSMenu alloc] initWithTitle:@"Services"];
 		servicesMenuItem.submenu = servicesMenu;
 		NSApp.servicesMenu = servicesMenu;
 
 		[appMenu addItem:[NSMenuItem separatorItem]];
+		[appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", displayName]
+		                   action:@selector(hide:)
+		            keyEquivalent:@"h"];
 
-		NSString *hideMenuItemTitle = [NSString stringWithFormat:@"Hide %@", displayName];
-		NSMenuItem *hideMenuItem = [[NSMenuItem alloc] initWithTitle:hideMenuItemTitle
-		                                                      action:@selector(hide:)
-		                                               keyEquivalent:@"h"];
-		[appMenu addItem:hideMenuItem];
+		[appMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagOption;
 
-		NSMenuItem *hideOthersMenuItem = [[NSMenuItem alloc] initWithTitle:@"Hide Others"
-		                                                            action:@selector(hideOtherApplications:)
-		                                                     keyEquivalent:@"h"];
-		hideOthersMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagOption;
-		[appMenu addItem:hideOthersMenuItem];
-
-		NSMenuItem *showAllMenuItem = [[NSMenuItem alloc] initWithTitle:@"Show All"
-		                                                         action:@selector(unhideAllApplications:)
-		                                                  keyEquivalent:@""];
-		[appMenu addItem:showAllMenuItem];
-
+		[appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
 		[appMenu addItem:[NSMenuItem separatorItem]];
 
-		NSString *quitMenuItemTitle = [NSString stringWithFormat:@"Quit %@", displayName];
-		NSMenuItem *quitMenuItem = [[NSMenuItem alloc] initWithTitle:quitMenuItemTitle
-		                                                      action:@selector(terminate:)
-		                                               keyEquivalent:@"q"];
-		[appMenu addItem:quitMenuItem];
+		[appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", displayName]
+		                   action:@selector(terminate:)
+		            keyEquivalent:@"q"];
 	}
 
 	{
-		NSMenuItem *fileMenuItem = [[NSMenuItem alloc] initWithTitle:@"File" action:nil keyEquivalent:@""];
-		[mainMenu addItem:fileMenuItem];
-
+		NSMenuItem *fileMenuItem = [mainMenu addItemWithTitle:@"File" action:nil keyEquivalent:@""];
 		NSMenu *fileMenu = [[NSMenu alloc] initWithTitle:@"File"];
 		fileMenuItem.submenu = fileMenu;
 
-		NSMenuItem *newMenuItem = [[NSMenuItem alloc] initWithTitle:@"New"
-		                                                     action:@selector(newDocument:)
-		                                              keyEquivalent:@"n"];
-		[fileMenu addItem:newMenuItem];
+		[fileMenu addItemWithTitle:@"New" action:@selector(newDocument:) keyEquivalent:@"n"];
+		[fileMenu addItemWithTitle:@"Open…" action:@selector(openDocument:) keyEquivalent:@"o"];
 
-		NSMenuItem *openMenuItem = [[NSMenuItem alloc] initWithTitle:@"Open…"
-		                                                      action:@selector(openDocument:)
-		                                               keyEquivalent:@"o"];
-		[fileMenu addItem:openMenuItem];
-
-		NSMenuItem *openRecentMenuItem = [[NSMenuItem alloc] initWithTitle:@"Open Recent" action:nil keyEquivalent:@""];
-		[fileMenu addItem:openRecentMenuItem];
-
+		NSMenuItem *openRecentMenuItem = [fileMenu addItemWithTitle:@"Open Recent" action:nil keyEquivalent:@""];
 		NSMenu *openRecentMenu = [[NSMenu alloc] initWithTitle:@"Open Recent"];
 		openRecentMenuItem.submenu = openRecentMenu;
-
-		NSMenuItem *clearRecentsMenuItem = [[NSMenuItem alloc] initWithTitle:@"Clear Menu"
-		                                                              action:@selector(clearRecentDocuments:)
-		                                                       keyEquivalent:@""];
-		[openRecentMenu addItem:clearRecentsMenuItem];
+		[openRecentMenu addItemWithTitle:@"Clear Menu" action:@selector(clearRecentDocuments:) keyEquivalent:@""];
 
 		[fileMenu addItem:[NSMenuItem separatorItem]];
+		[fileMenu addItemWithTitle:@"Close" action:@selector(performClose:) keyEquivalent:@"w"];
+		[fileMenu addItemWithTitle:@"Save…" action:@selector(saveDocument:) keyEquivalent:@"s"];
 
-		NSMenuItem *closeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Close"
-		                                                       action:@selector(performClose:)
-		                                                keyEquivalent:@"w"];
-		[fileMenu addItem:closeMenuItem];
+		[fileMenu addItemWithTitle:@"Save As…" action:@selector(saveDocumentAs:) keyEquivalent:@"s"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagShift;
 
-		NSMenuItem *saveMenuItem = [[NSMenuItem alloc] initWithTitle:@"Save…"
-		                                                      action:@selector(saveDocument:)
-		                                               keyEquivalent:@"s"];
-		[fileMenu addItem:saveMenuItem];
-
-		NSMenuItem *saveAsMenuItem = [[NSMenuItem alloc] initWithTitle:@"Save As…"
-		                                                        action:@selector(saveDocumentAs:)
-		                                                 keyEquivalent:@"s"];
-		saveAsMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagShift;
-		[fileMenu addItem:saveAsMenuItem];
-
-		NSMenuItem *revertToSavedMenuItem = [[NSMenuItem alloc] initWithTitle:@"Revert to Saved"
-		                                                               action:@selector(revertDocumentToSaved:)
-		                                                        keyEquivalent:@"r"];
-		[fileMenu addItem:revertToSavedMenuItem];
-
+		[fileMenu addItemWithTitle:@"Revert to Saved" action:@selector(revertDocumentToSaved:) keyEquivalent:@"r"];
 		[fileMenu addItem:[NSMenuItem separatorItem]];
 
-		NSMenuItem *pageSetupMenuItem = [[NSMenuItem alloc] initWithTitle:@"Page Setup…"
-		                                                           action:@selector(runPageLayout:)
-		                                                    keyEquivalent:@"p"];
-		pageSetupMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagShift;
-		[fileMenu addItem:pageSetupMenuItem];
+		[fileMenu addItemWithTitle:@"Page Setup…" action:@selector(runPageLayout:) keyEquivalent:@"p"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagShift;
 
-		NSMenuItem *printMenuItem = [[NSMenuItem alloc] initWithTitle:@"Print…"
-		                                                       action:@selector(print:)
-		                                                keyEquivalent:@"p"];
-		[fileMenu addItem:printMenuItem];
+		[fileMenu addItemWithTitle:@"Print…" action:@selector(print:) keyEquivalent:@"p"];
 	}
 
 	{
-		NSMenuItem *editMenuItem = [[NSMenuItem alloc] initWithTitle:@"Edit" action:nil keyEquivalent:@""];
-		[mainMenu addItem:editMenuItem];
-
+		NSMenuItem *editMenuItem = [mainMenu addItemWithTitle:@"Edit" action:nil keyEquivalent:@""];
 		NSMenu *editMenu = [[NSMenu alloc] initWithTitle:@"Edit"];
 		editMenuItem.submenu = editMenu;
 
-		NSMenuItem *undoMenuItem = [[NSMenuItem alloc] initWithTitle:@"Undo"
-		                                                      action:@selector(undo:)
-		                                               keyEquivalent:@"z"];
-		[editMenu addItem:undoMenuItem];
+		[editMenu addItemWithTitle:@"Undo" action:@selector(undo:) keyEquivalent:@"z"];
 
-		NSMenuItem *redoMenuItem = [[NSMenuItem alloc] initWithTitle:@"Redo"
-		                                                      action:@selector(redo:)
-		                                               keyEquivalent:@"z"];
-		redoMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagShift;
-		[editMenu addItem:redoMenuItem];
+		[editMenu addItemWithTitle:@"Redo" action:@selector(redo:) keyEquivalent:@"z"].keyEquivalentModifierMask |=
+		        NSEventModifierFlagShift;
 
 		[editMenu addItem:[NSMenuItem separatorItem]];
-
-		NSMenuItem *cutMenuItem = [[NSMenuItem alloc] initWithTitle:@"Cut" action:@selector(cut:) keyEquivalent:@"x"];
-		[editMenu addItem:cutMenuItem];
-
-		NSMenuItem *copyMenuItem = [[NSMenuItem alloc] initWithTitle:@"Copy"
-		                                                      action:@selector(copy:)
-		                                               keyEquivalent:@"c"];
-		[editMenu addItem:copyMenuItem];
-
-		NSMenuItem *pasteMenuItem = [[NSMenuItem alloc] initWithTitle:@"Paste"
-		                                                       action:@selector(paste:)
-		                                                keyEquivalent:@"v"];
-		[editMenu addItem:pasteMenuItem];
-
-		NSMenuItem *selectAllMenuItem = [[NSMenuItem alloc] initWithTitle:@"Select All"
-		                                                           action:@selector(selectAll:)
-		                                                    keyEquivalent:@"a"];
-		[editMenu addItem:selectAllMenuItem];
+		[editMenu addItemWithTitle:@"Cut" action:@selector(cut:) keyEquivalent:@"x"];
+		[editMenu addItemWithTitle:@"Copy" action:@selector(copy:) keyEquivalent:@"c"];
+		[editMenu addItemWithTitle:@"Paste" action:@selector(paste:) keyEquivalent:@"v"];
+		[editMenu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
 	}
 
 	{
-		NSMenuItem *viewMenuItem = [[NSMenuItem alloc] initWithTitle:@"View" action:nil keyEquivalent:@""];
-		[mainMenu addItem:viewMenuItem];
-
+		NSMenuItem *viewMenuItem = [mainMenu addItemWithTitle:@"View" action:nil keyEquivalent:@""];
 		NSMenu *viewMenu = [[NSMenu alloc] initWithTitle:@"View"];
 		viewMenuItem.submenu = viewMenu;
 
-		NSMenuItem *showToolbarMenuItem = [[NSMenuItem alloc] initWithTitle:@"Show Toolbar"
-		                                                             action:@selector(toggleToolbarShown:)
-		                                                      keyEquivalent:@"t"];
-		showToolbarMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagOption;
-		[viewMenu addItem:showToolbarMenuItem];
+		[viewMenu addItemWithTitle:@"Show Toolbar" action:@selector(toggleToolbarShown:) keyEquivalent:@"t"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagOption;
 
-		NSMenuItem *customizeToolbarMenuItem =
-		        [[NSMenuItem alloc] initWithTitle:@"Customize Toolbar…"
-		                                   action:@selector(runToolbarCustomizationPalette:)
-		                            keyEquivalent:@""];
-		[viewMenu addItem:customizeToolbarMenuItem];
+		[viewMenu addItemWithTitle:@"Customize Toolbar…"
+		                    action:@selector(runToolbarCustomizationPalette:)
+		             keyEquivalent:@""];
 
 		[viewMenu addItem:[NSMenuItem separatorItem]];
 
-		NSMenuItem *showSidebarMenuItem = [[NSMenuItem alloc] initWithTitle:@"Show Sidebar"
-		                                                             action:@selector(toggleSidebar:)
-		                                                      keyEquivalent:@"s"];
-		showSidebarMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagControl;
-		[viewMenu addItem:showSidebarMenuItem];
+		[viewMenu addItemWithTitle:@"Show Sidebar" action:@selector(toggleSidebar:) keyEquivalent:@"s"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagControl;
 
-		NSMenuItem *enterFullScreenMenuItem = [[NSMenuItem alloc] initWithTitle:@"Enter Full Screen"
-		                                                                 action:@selector(toggleFullScreen:)
-		                                                          keyEquivalent:@"f"];
-		enterFullScreenMenuItem.keyEquivalentModifierMask |= NSEventModifierFlagControl;
-		[viewMenu addItem:enterFullScreenMenuItem];
+		[viewMenu addItemWithTitle:@"Enter Full Screen" action:@selector(toggleFullScreen:) keyEquivalent:@"f"]
+		        .keyEquivalentModifierMask |= NSEventModifierFlagControl;
 	}
 
 	{
-		NSMenuItem *windowMenuItem = [[NSMenuItem alloc] initWithTitle:@"Window" action:nil keyEquivalent:@""];
-		[mainMenu addItem:windowMenuItem];
-
+		NSMenuItem *windowMenuItem = [mainMenu addItemWithTitle:@"Window" action:nil keyEquivalent:@""];
 		NSMenu *windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
 		windowMenuItem.submenu = windowMenu;
 
-		NSMenuItem *minimizeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Minimize"
-		                                                          action:@selector(performMiniaturize:)
-		                                                   keyEquivalent:@"m"];
-		[windowMenu addItem:minimizeMenuItem];
-
-		NSMenuItem *zoomMenuItem = [[NSMenuItem alloc] initWithTitle:@"Zoom"
-		                                                      action:@selector(performZoom:)
-		                                               keyEquivalent:@""];
-		[windowMenu addItem:zoomMenuItem];
-
+		[windowMenu addItemWithTitle:@"Minimize" action:@selector(performMiniaturize:) keyEquivalent:@"m"];
+		[windowMenu addItemWithTitle:@"Zoom" action:@selector(performZoom:) keyEquivalent:@""];
 		[windowMenu addItem:[NSMenuItem separatorItem]];
-
-		NSMenuItem *bringAllToFrontMenuItem = [[NSMenuItem alloc] initWithTitle:@"Bring All to Front"
-		                                                                 action:@selector(arrangeInFront:)
-		                                                          keyEquivalent:@""];
-		[windowMenu addItem:bringAllToFrontMenuItem];
+		[windowMenu addItemWithTitle:@"Bring All to Front" action:@selector(arrangeInFront:) keyEquivalent:@""];
 
 		NSApp.windowsMenu = windowMenu;
 	}
