@@ -52,9 +52,11 @@ plutil \
 	-o "$temporaryEntitlementsPath" \
 	"Data/Entitlements.json"
 
-plutil \
-	-insert "com\.apple\.security\.get-task-allow" -bool YES \
-	"$temporaryEntitlementsPath"
+if [ "$buildMode" != "--release" ]; then
+	plutil \
+		-insert "com\.apple\.security\.get-task-allow" -bool YES \
+		"$temporaryEntitlementsPath"
+fi
 
 if [ "$buildMode" = "--release" ]; then
 	set -- --sign "$signingIdentity" --timestamp
