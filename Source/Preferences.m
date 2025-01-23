@@ -4,10 +4,6 @@
 @property(readonly, nonatomic) id propertyList;
 @end
 
-@interface Preferences ()
-- (void)didChange;
-@end
-
 @implementation Countdown {
 	NSString *_title;
 	NSDate *_date;
@@ -26,7 +22,7 @@
 
 - (void)setTitle:(NSString *)title {
 	_title = [title copy];
-	[Preferences.sharedPreferences didChange];
+	[self didChange];
 }
 
 - (NSDate *)date {
@@ -35,7 +31,11 @@
 
 - (void)setDate:(NSDate *)date {
 	_date = date;
-	[Preferences.sharedPreferences didChange];
+	[self didChange];
+}
+
+- (void)didChange {
+	[NSNotificationCenter.defaultCenter postNotificationName:CountdownDidChangeNotification object:self];
 }
 
 - (instancetype)initForPreferences {
@@ -79,6 +79,11 @@ static NSString *const CountdownsKey = @"Countdowns";
 		[_countdowns addObject:[Countdown countdownWithPropertyList:countdownPropertyList]];
 	}
 
+	[NSNotificationCenter.defaultCenter addObserver:self
+	                                       selector:@selector(countdownDidChange:)
+	                                           name:CountdownDidChangeNotification
+	                                         object:nil];
+
 	return self;
 }
 
@@ -99,24 +104,46 @@ static NSString *const CountdownsKey = @"Countdowns";
 
 - (Countdown *)addCountdown {
 	Countdown *countdown = [[Countdown alloc] initForPreferences];
+	NSUInteger index = _countdowns.count;
 	[_countdowns addObject:countdown];
-	[self didChange];
+	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeInsert atIndex:index];
 	return countdown;
 }
 
-- (void)removeCountdownAtIndex:(NSUInteger)index {
+- (void)deleteCountdownAtIndex:(NSUInteger)index {
 	[_countdowns removeObjectAtIndex:index];
-	[self didChange];
+	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeDelete atIndex:index];
 }
 
-- (void)didChange {
+- (void)countdownDidChange:(NSNotification *)notification {
+	Countdown *countdown = notification.object;
+	NSUInteger index = [_countdowns indexOfObject:countdown];
+	NSAssert(index != NSNotFound, @"all countdowns are contained in the global Preferences singleton");
+	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeUpdate atIndex:index];
+}
+
+- (void)didChangeCountdownsWithChangeType:(PreferencesCountdownsChangeType)changeType atIndex:(NSUInteger)index {
 	NSMutableArray<id> *countdownsPropertyList = [NSMutableArray arrayWithCapacity:_countdowns.count];
 	for (Countdown *countdown in _countdowns) {
 		[countdownsPropertyList addObject:countdown.propertyList];
 	}
 	[NSUserDefaults.standardUserDefaults setObject:countdownsPropertyList forKey:CountdownsKey];
 
-	[NSNotificationCenter.defaultCenter postNotificationName:PreferencesDidChangeNotification object:nil];
+	PreferencesCountdownsChange *change = [PreferencesCountdownsChange changeWithType:changeType index:index];
+	[NSNotificationCenter.defaultCenter postNotificationName:PreferencesCountdownsDidChangeNotification
+	                                                  object:nil
+	                                                userInfo:@{PreferencesCountdownsChangeKey : change}];
+}
+
+@end
+
+@implementation PreferencesCountdownsChange
+
++ (instancetype)changeWithType:(PreferencesCountdownsChangeType)type index:(NSUInteger)index {
+	PreferencesCountdownsChange *change = [[PreferencesCountdownsChange alloc] init];
+	change->_type = type;
+	change->_index = index;
+	return change;
 }
 
 @end

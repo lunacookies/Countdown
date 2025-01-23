@@ -40,17 +40,6 @@
 	]];
 }
 
-- (void)viewDidLoad {
-	[NSNotificationCenter.defaultCenter addObserver:self
-	                                       selector:@selector(preferencesDidChange:)
-	                                           name:PreferencesDidChangeNotification
-	                                         object:nil];
-}
-
-- (void)dealloc {
-	[NSNotificationCenter.defaultCenter removeObserver:self name:PreferencesDidChangeNotification object:nil];
-}
-
 - (void)controlTextDidChange:(NSNotification *)obj {
 	_countdown.title = _titleField.stringValue;
 }
@@ -59,10 +48,7 @@
 	_countdown.date = _datePicker.dateValue;
 }
 
-- (void)preferencesDidChange:(NSNotification *)notification {
-	if (_countdown == nil) {
-		return;
-	}
+- (void)countdownDidChange:(NSNotification *)notification {
 	_titleField.stringValue = _countdown.title;
 	_datePicker.dateValue = _countdown.date;
 }
@@ -73,7 +59,16 @@
 
 - (void)setCountdown:(Countdown *)countdown {
 	_countdown = countdown;
-	[self preferencesDidChange:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:CountdownDidChangeNotification object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+	                                       selector:@selector(countdownDidChange:)
+	                                           name:CountdownDidChangeNotification
+	                                         object:_countdown];
+	[self countdownDidChange:nil];
+}
+
+- (void)dealloc {
+	[NSNotificationCenter.defaultCenter removeObserver:self name:CountdownDidChangeNotification object:nil];
 }
 
 @end

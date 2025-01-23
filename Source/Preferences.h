@@ -11,6 +11,22 @@
 @property(nonatomic, copy, readonly) NSArray<Countdown *> *countdowns;
 
 - (Countdown *)addCountdown;
-- (void)removeCountdownAtIndex:(NSUInteger)index;
+- (void)deleteCountdownAtIndex:(NSUInteger)index;
 
 @end
+
+typedef NS_ENUM(NSInteger, PreferencesCountdownsChangeType) {
+	PreferencesCountdownsChangeTypeInsert,
+	PreferencesCountdownsChangeTypeDelete,
+	PreferencesCountdownsChangeTypeUpdate,
+};
+
+@interface PreferencesCountdownsChange : NSObject
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)changeWithType:(PreferencesCountdownsChangeType)type index:(NSUInteger)index;
+@property(nonatomic, readonly) PreferencesCountdownsChangeType type;
+@property(nonatomic, readonly) NSUInteger index;
+@end
+
+static NSString *const PreferencesCountdownsChangeKey = @"PreferencesCountdownsChange";

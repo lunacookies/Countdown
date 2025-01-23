@@ -1,7 +1,9 @@
 @import AppKit;
 
-static const NSNotificationName PreferencesDidChangeNotification =
-        @"org.xoria.Countdown.PreferencesDidChangeNotification";
+static const NSNotificationName CountdownDidChangeNotification = @"org.xoria.Countdown.CountdownDidChangeNotification";
+
+static const NSNotificationName PreferencesCountdownsDidChangeNotification =
+        @"org.xoria.Countdown.PreferencesCountdownsDidChangeNotification";
 
 #include "AppDelegate.h"
 #include "Preferences.h"

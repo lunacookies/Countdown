@@ -106,18 +106,41 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 - (void)windowDidLoad {
 	[self updateRemoveButtonEnabledState];
+
 	[NSNotificationCenter.defaultCenter addObserver:self
-	                                       selector:@selector(preferencesDidChange:)
-	                                           name:PreferencesDidChangeNotification
+	                                       selector:@selector(preferencesCountdownsDidChange:)
+	                                           name:PreferencesCountdownsDidChangeNotification
 	                                         object:nil];
 }
 
 - (void)dealloc {
-	[NSNotificationCenter.defaultCenter removeObserver:self name:PreferencesDidChangeNotification object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:PreferencesCountdownsDidChangeNotification object:nil];
 }
 
-- (void)preferencesDidChange:(NSNotification *)notification {
-	[_tableView reloadData];
+- (void)preferencesCountdownsDidChange:(NSNotification *)notification {
+	PreferencesCountdownsChange *change = notification.userInfo[PreferencesCountdownsChangeKey];
+
+	switch (change.type) {
+		case PreferencesCountdownsChangeTypeInsert: {
+			[_tableView insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:change.index]
+			                  withAnimation:NSTableViewAnimationSlideDown];
+			break;
+		}
+
+		case PreferencesCountdownsChangeTypeDelete: {
+			[_tableView removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:change.index]
+			                  withAnimation:NSTableViewAnimationSlideDown];
+			break;
+		}
+
+		case PreferencesCountdownsChangeTypeUpdate: {
+			NSIndexSet *rowIndexes = [NSIndexSet indexSetWithIndex:change.index];
+			NSUInteger columnCount = _tableView.tableColumns.count;
+			NSIndexSet *columnIndexes = [NSIndexSet indexSetWithIndexesInRange:(NSRange){0, columnCount}];
+			[_tableView reloadDataForRowIndexes:rowIndexes columnIndexes:columnIndexes];
+			break;
+		}
+	}
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
@@ -184,7 +207,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 - (void)removeCountdown:(NSButton *)removeButton {
 	NSAssert(_tableView.selectedRow >= 0, @"must have a selected row to remove a countdown");
-	[Preferences.sharedPreferences removeCountdownAtIndex:(NSUInteger)_tableView.selectedRow];
+	[Preferences.sharedPreferences deleteCountdownAtIndex:(NSUInteger)_tableView.selectedRow];
 }
 
 @end

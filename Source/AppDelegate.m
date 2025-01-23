@@ -1,7 +1,8 @@
 @implementation AppDelegate {
 	EditWindowController *_editWindowController;
 	SettingsWindowController *_settingsWindowController;
-	NSMutableArray<NSStatusItem *> *_statusItems;
+	NSMutableArray<NSStatusItem *> *_countdownStatusItems;
+	NSStatusItem *_emptyStateStatusItem;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
@@ -127,12 +128,20 @@
 
 	_editWindowController = [[EditWindowController alloc] init];
 	_settingsWindowController = [[SettingsWindowController alloc] init];
-	_statusItems = [NSMutableArray array];
 
-	[self preferencesDidChange:nil];
+	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
+	_countdownStatusItems = [NSMutableArray arrayWithCapacity:countdowns.count];
+	for (Countdown *countdown in countdowns) {
+		NSStatusItem *statusItem = [self newStatusItem];
+		[_countdownStatusItems addObject:statusItem];
+		[self configureStatusItem:statusItem forCountdown:countdown];
+	}
+
+	[self updateEmptyStateStatusItem];
+
 	[NSNotificationCenter.defaultCenter addObserver:self
-	                                       selector:@selector(preferencesDidChange:)
-	                                           name:PreferencesDidChangeNotification
+	                                       selector:@selector(preferencesCountdownsDidChange:)
+	                                           name:PreferencesCountdownsDidChangeNotification
 	                                         object:nil];
 }
 
@@ -146,41 +155,65 @@
 	[NSApp activate];
 }
 
-- (void)preferencesDidChange:(NSNotification *)notification {
-	[_statusItems removeAllObjects];
-	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
+- (void)preferencesCountdownsDidChange:(NSNotification *)notification {
+	PreferencesCountdownsChange *change = notification.userInfo[PreferencesCountdownsChangeKey];
 
-	if (countdowns.count == 0) {
-		NSStatusItem *statusItem = [self addStatusItem];
-		statusItem.button.title = @"No Countdowns";
+	switch (change.type) {
+		case PreferencesCountdownsChangeTypeInsert: {
+			Countdown *countdown = Preferences.sharedPreferences.countdowns[change.index];
+			NSStatusItem *statusItem = [self newStatusItem];
+			[_countdownStatusItems insertObject:statusItem atIndex:change.index];
+			[self configureStatusItem:statusItem forCountdown:countdown];
+			break;
+		}
+
+		case PreferencesCountdownsChangeTypeDelete: {
+			[_countdownStatusItems removeObjectAtIndex:change.index];
+			break;
+		}
+
+		case PreferencesCountdownsChangeTypeUpdate: {
+			Countdown *countdown = Preferences.sharedPreferences.countdowns[change.index];
+			[self configureStatusItem:_countdownStatusItems[change.index] forCountdown:countdown];
+			break;
+		}
+	}
+
+	[self updateEmptyStateStatusItem];
+}
+
+- (void)updateEmptyStateStatusItem {
+	if (_countdownStatusItems.count > 0) {
+		_emptyStateStatusItem = nil;
 		return;
 	}
 
-	for (Countdown *countdown in countdowns) {
-		NSStatusItem *statusItem = [self addStatusItem];
-		NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
-		NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
-		formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
-		formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-		NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdown.date];
-
-		if (countdown.title.length > 0) {
-			statusItem.button.title = [NSString stringWithFormat:@"%@: %@ left", countdown.title, intervalString];
-		} else {
-			statusItem.button.title = [NSString stringWithFormat:@"%@ left", intervalString];
-		}
+	if (_emptyStateStatusItem == nil) {
+		_emptyStateStatusItem = [self newStatusItem];
+		_emptyStateStatusItem.button.title = @"No Countdowns";
 	}
 }
 
-- (NSStatusItem *)addStatusItem {
-	NSStatusItem *statusItem = [NSStatusBar.systemStatusBar statusItemWithLength:NSVariableStatusItemLength];
+- (void)configureStatusItem:(NSStatusItem *)statusItem forCountdown:(Countdown *)countdown {
+	NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
+	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
+	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
+	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdown.date];
 
+	if (countdown.title.length > 0) {
+		statusItem.button.title = [NSString stringWithFormat:@"%@: %@ left", countdown.title, intervalString];
+	} else {
+		statusItem.button.title = [NSString stringWithFormat:@"%@ left", intervalString];
+	}
+}
+
+- (NSStatusItem *)newStatusItem {
+	NSStatusItem *statusItem = [NSStatusBar.systemStatusBar statusItemWithLength:NSVariableStatusItemLength];
 	NSMenu *menu = [[NSMenu alloc] init];
 	[menu addItemWithTitle:@"Edit Countdowns…" action:@selector(editCountdowns:) keyEquivalent:@""];
 	[menu addItemWithTitle:@"Settings…" action:@selector(showSettings:) keyEquivalent:@","];
 	statusItem.menu = menu;
-
-	[_statusItems addObject:statusItem];
 	return statusItem;
 }
 
