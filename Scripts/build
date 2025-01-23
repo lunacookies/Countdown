@@ -1,27 +1,30 @@
-#!/bin/sh
+#!/bin/dash
 
 set -e
 
+buildMode="$1"
+buildDirectory="Build"
+appBundleName="Countdown"
+appBundlePath="$buildDirectory/$appBundleName.app"
+signingIdentity="S4H58CCV6D"
+
 clang-format -i Source/*.m Source/*.h
 
-rm -rf "Build"
-mkdir -p "Build/Countdown.app/Contents"
-mkdir -p "Build/Countdown.app/Contents/MacOS"
-mkdir -p "Build/Countdown.app/Contents/Resources/en.lproj"
+rm -rf "$buildDirectory"
+mkdir -p "$appBundlePath/Contents/MacOS"
+mkdir -p "$appBundlePath/Contents/Resources/en.lproj"
 
 plutil \
 	-convert binary1 \
-	-o "Build/Countdown.app/Contents/Info.plist" \
+	-o "$appBundlePath/Contents/Info.plist" \
 	"Data/Info.json"
 
 plutil -convert binary1 \
-	-o "Build/Countdown.app/Contents/Resources/en.lproj/InfoPlist.strings" \
+	-o "$appBundlePath/Contents/Resources/en.lproj/InfoPlist.strings" \
 	"Data/InfoPlist.json"
 
-clang \
+set -- \
 	-fmodules -fobjc-arc \
-	-g \
-	-fsanitize=undefined \
 	-W \
 	-Wall \
 	-Wextra \
@@ -30,20 +33,54 @@ clang \
 	-Wimplicit-fallthrough \
 	-Wmissing-prototypes \
 	-Wshadow \
-	-Wstrict-prototypes \
-	-o "Build/Countdown.app/Contents/MacOS/Countdown" \
-	"Source/EntryPoint.m"
+	-Wstrict-prototypes
 
+if [ "$buildMode" = "--release" ]; then
+	set -- "$@" -Os -fwrapv -ftrivial-auto-var-init=zero -fno-strict-aliasing
+else
+	set -- "$@" -g -fsanitize=undefined
+fi
+
+set -- "$@" -o "$appBundlePath/Contents/MacOS/$appBundleName"
+set -- "$@" "Source/EntryPoint.m"
+
+clang "$@"
+
+temporaryEntitlementsPath="$buildDirectory/$appBundleName.entitlements"
 plutil \
 	-convert xml1 \
-	-o "Build/Countdown.entitlements" \
+	-o "$temporaryEntitlementsPath" \
 	"Data/Entitlements.json"
 
 plutil \
 	-insert "com\.apple\.security\.get-task-allow" -bool YES \
-	"Build/Countdown.entitlements"
+	"$temporaryEntitlementsPath"
 
-codesign \
-	--sign - \
-	--entitlements "Build/Countdown.entitlements" \
-	--options runtime "Build/Countdown.app/Contents/MacOS/Countdown"
+if [ "$buildMode" = "--release" ]; then
+	set -- --sign "$signingIdentity" --timestamp
+else
+	set -- --sign -
+fi
+
+set -- "$@" \
+	--entitlements "$temporaryEntitlementsPath" \
+	--options runtime "$appBundlePath/Contents/MacOS/$appBundleName"
+
+codesign "$@"
+
+rm "$temporaryEntitlementsPath"
+
+if [ "$buildMode" = "--release" ]; then
+	ditto \
+		-c -k --keepParent \
+		"$appBundlePath" \
+		"$buildDirectory/$appBundleName.zip"
+
+	xcrun notarytool submit \
+		"$buildDirectory/$appBundleName.zip" \
+		--keychain-profile notarytool-password \
+		--wait
+
+	stapler staple "$appBundlePath"
+	syspolicy_check distribution "$appBundlePath"
+fi
