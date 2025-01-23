@@ -193,6 +193,22 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	_removeButton.enabled = _tableView.selectedRow >= 0;
 }
 
+- (NSArray<NSTableViewRowAction *> *)tableView:(NSTableView *)tableView
+                              rowActionsForRow:(NSInteger)row
+                                          edge:(NSTableRowActionEdge)edge {
+	if (edge != NSTableRowActionEdgeTrailing) {
+		return @[];
+	}
+
+	return @[ [NSTableViewRowAction rowActionWithStyle:NSTableViewRowActionStyleDestructive
+		                                         title:@"Delete"
+		                                       handler:^(NSTableViewRowAction *action, NSInteger row_) {
+		                                           (void)action;
+		                                           [Preferences.sharedPreferences
+		                                                   deleteCountdownAtIndex:(NSUInteger)row_];
+		                                       }] ];
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 	return (NSInteger)Preferences.sharedPreferences.countdowns.count;
 }
