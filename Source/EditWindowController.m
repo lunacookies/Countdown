@@ -10,6 +10,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	NSTableView *_tableView;
 	CountdownEditorViewController *_editorViewController;
 	NSTextField *_noSelectionLabel;
+	NSButton *_removeButton;
 }
 
 - (instancetype)init {
@@ -65,13 +66,19 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	                                         target:self
 	                                         action:@selector(addCountdown:)];
 
+	_removeButton = [NSButton buttonWithImage:[NSImage imageNamed:NSImageNameRemoveTemplate]
+	                                   target:self
+	                                   action:@selector(removeCountdown:)];
+
 	NSView *contentView = self.window.contentView;
 	scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 	box.translatesAutoresizingMaskIntoConstraints = NO;
 	addButton.translatesAutoresizingMaskIntoConstraints = NO;
+	_removeButton.translatesAutoresizingMaskIntoConstraints = NO;
 	[contentView addSubview:scrollView];
 	[contentView addSubview:box];
 	[contentView addSubview:addButton];
+	[contentView addSubview:_removeButton];
 
 	NSLayoutGuide *guide = contentView.layoutMarginsGuide;
 	[NSLayoutConstraint activateConstraints:@[
@@ -84,6 +91,9 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 		[addButton.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
 		[addButton.leadingAnchor constraintEqualToAnchor:scrollView.leadingAnchor],
 
+		[_removeButton.centerYAnchor constraintEqualToAnchor:addButton.centerYAnchor],
+		[_removeButton.leadingAnchor constraintEqualToAnchor:addButton.trailingAnchor constant:5],
+
 		[box.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
 		[box.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
 		[box.leadingAnchor constraintEqualToAnchor:scrollView.trailingAnchor constant:10],
@@ -95,6 +105,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 }
 
 - (void)windowDidLoad {
+	[self updateRemoveButtonEnabledState];
 	[NSNotificationCenter.defaultCenter addObserver:self
 	                                       selector:@selector(preferencesDidChange:)
 	                                           name:PreferencesDidChangeNotification
@@ -118,6 +129,8 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
+	[self updateRemoveButtonEnabledState];
+
 	NSInteger selectedRow = _tableView.selectedRow;
 
 	if (selectedRow < 0) {
@@ -153,6 +166,10 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	_editorViewController.countdown = Preferences.sharedPreferences.countdowns[(NSUInteger)selectedRow];
 }
 
+- (void)updateRemoveButtonEnabledState {
+	_removeButton.enabled = _tableView.selectedRow >= 0;
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 	return (NSInteger)Preferences.sharedPreferences.countdowns.count;
 }
@@ -163,6 +180,11 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 - (void)addCountdown:(NSButton *)addButton {
 	[Preferences.sharedPreferences addCountdown];
+}
+
+- (void)removeCountdown:(NSButton *)removeButton {
+	NSAssert(_tableView.selectedRow >= 0, @"must have a selected row to remove a countdown");
+	[Preferences.sharedPreferences removeCountdownAtIndex:(NSUInteger)_tableView.selectedRow];
 }
 
 @end

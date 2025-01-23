@@ -11,5 +11,6 @@
 @property(nonatomic, copy, readonly) NSArray<Countdown *> *countdowns;
 
 - (Countdown *)addCountdown;
+- (void)removeCountdownAtIndex:(NSUInteger)index;
 
 @end

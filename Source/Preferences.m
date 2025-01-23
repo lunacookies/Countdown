@@ -104,6 +104,11 @@ static NSString *const CountdownsKey = @"Countdowns";
 	return countdown;
 }
 
+- (void)removeCountdownAtIndex:(NSUInteger)index {
+	[_countdowns removeObjectAtIndex:index];
+	[self didChange];
+}
+
 - (void)didChange {
 	NSMutableArray<id> *countdownsPropertyList = [NSMutableArray arrayWithCapacity:_countdowns.count];
 	for (Countdown *countdown in _countdowns) {
