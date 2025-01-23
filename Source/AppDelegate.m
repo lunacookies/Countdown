@@ -213,6 +213,13 @@
 	NSMenu *menu = [[NSMenu alloc] init];
 	[menu addItemWithTitle:@"Edit Countdowns…" action:@selector(editCountdowns:) keyEquivalent:@""];
 	[menu addItemWithTitle:@"Settings…" action:@selector(showSettings:) keyEquivalent:@","];
+	[menu addItem:[NSMenuItem separatorItem]];
+
+	NSString *displayName = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	[menu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", displayName]
+	                action:@selector(terminate:)
+	         keyEquivalent:@"q"];
+
 	statusItem.menu = menu;
 	return statusItem;
 }
