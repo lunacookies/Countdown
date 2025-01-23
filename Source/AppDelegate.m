@@ -190,7 +190,7 @@
 
 	if (_emptyStateStatusItem == nil) {
 		_emptyStateStatusItem = [self newStatusItem];
-		_emptyStateStatusItem.button.title = @"No Countdowns";
+		[self configureStatusItem:_emptyStateStatusItem withTitle:@"No Countdowns"];
 	}
 }
 
@@ -201,11 +201,33 @@
 	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
 	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdown.date];
 
+	NSString *title = nil;
 	if (countdown.title.length > 0) {
-		statusItem.button.title = [NSString stringWithFormat:@"%@: %@ left", countdown.title, intervalString];
+		title = [NSString stringWithFormat:@"%@\n%@ left", countdown.title, intervalString];
 	} else {
-		statusItem.button.title = [NSString stringWithFormat:@"%@ left", intervalString];
+		title = [NSString stringWithFormat:@"%@ left", intervalString];
 	}
+
+	[self configureStatusItem:statusItem withTitle:title];
+}
+
+- (void)configureStatusItem:(NSStatusItem *)statusItem withTitle:(NSString *)title {
+	CGFloat baselineOffset = 0.5;
+	CGFloat fontSize = 11;
+	if ([title containsString:@"\n"]) {
+		baselineOffset = -4;
+		fontSize = 9;
+	}
+
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	paragraphStyle.maximumLineHeight = 10;
+	statusItem.button.attributedTitle =
+	        [[NSAttributedString alloc] initWithString:title
+	                                        attributes:@{
+		                                        NSFontAttributeName : [NSFont systemFontOfSize:fontSize],
+		                                        NSParagraphStyleAttributeName : paragraphStyle,
+		                                        NSBaselineOffsetAttributeName : @(baselineOffset),
+	                                        }];
 }
 
 - (NSStatusItem *)newStatusItem {
