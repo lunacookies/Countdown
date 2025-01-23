@@ -85,4 +85,6 @@ if [ "$buildMode" = "--release" ]; then
 
 	stapler staple "$appBundlePath"
 	syspolicy_check distribution "$appBundlePath"
+
+	aa archive -D "$appBundlePath" -o "Build/$appBundleName.aar"
 fi
