@@ -2,17 +2,21 @@
 
 static const NSNotificationName CountdownDidChangeNotification = @"org.xoria.Countdown.CountdownDidChangeNotification";
 
-static const NSNotificationName PreferencesCountdownsDidChangeNotification =
-        @"org.xoria.Countdown.PreferencesCountdownsDidChangeNotification";
+static const NSNotificationName CountdownStoreDidChangeNotification =
+        @"org.xoria.Countdown.CountdownStoreDidChangeNotification";
+
+static const NSNotificationName SettingsDidChangeNotification = @"org.xoria.Countdown.SettingsDidChangeNotification";
 
 #include "AppDelegate.h"
-#include "Preferences.h"
+#include "Countdown.h"
+#include "Settings.h"
 #include "EditWindowController.h"
 #include "SettingsWindowController.h"
 #include "CountdownEditorViewController.h"
 
 #include "AppDelegate.m"
-#include "Preferences.m"
+#include "Countdown.m"
+#include "Settings.m"
 #include "EditWindowController.m"
 #include "SettingsWindowController.m"
 #include "CountdownEditorViewController.m"

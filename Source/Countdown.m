@@ -1,5 +1,5 @@
 @interface Countdown ()
-- (instancetype)initForPreferences;
+- (instancetype)initForCountdownStore;
 + (instancetype)countdownWithPropertyList:(id)propertyList;
 @property(readonly, nonatomic) id propertyList;
 @end
@@ -38,7 +38,7 @@
 	[NSNotificationCenter.defaultCenter postNotificationName:CountdownDidChangeNotification object:self];
 }
 
-- (instancetype)initForPreferences {
+- (instancetype)initForCountdownStore {
 	return [self init];
 }
 
@@ -62,7 +62,7 @@ static NSString *const DateKey = @"Date";
 
 @end
 
-@implementation Preferences {
+@implementation CountdownStore {
 	NSMutableArray<Countdown *> *_countdowns;
 }
 
@@ -87,15 +87,15 @@ static NSString *const CountdownsKey = @"Countdowns";
 	return self;
 }
 
-+ (Preferences *)sharedPreferences {
-	static Preferences *preferences = nil;
++ (CountdownStore *)sharedCountdownStore {
+	static CountdownStore *countdownStore = nil;
 	static dispatch_once_t predicate;
 
 	dispatch_once(&predicate, ^{
-		preferences = [[Preferences alloc] init];
+		countdownStore = [[CountdownStore alloc] init];
 	});
 
-	return preferences;
+	return countdownStore;
 }
 
 - (NSArray<Countdown *> *)countdowns {
@@ -103,44 +103,44 @@ static NSString *const CountdownsKey = @"Countdowns";
 }
 
 - (Countdown *)addCountdown {
-	Countdown *countdown = [[Countdown alloc] initForPreferences];
+	Countdown *countdown = [[Countdown alloc] initForCountdownStore];
 	NSUInteger index = _countdowns.count;
 	[_countdowns addObject:countdown];
-	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeInsert atIndex:index];
+	[self didChangeWithType:CountdownStoreChangeTypeInsert atIndex:index];
 	return countdown;
 }
 
 - (void)deleteCountdownAtIndex:(NSUInteger)index {
 	[_countdowns removeObjectAtIndex:index];
-	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeDelete atIndex:index];
+	[self didChangeWithType:CountdownStoreChangeTypeDelete atIndex:index];
 }
 
 - (void)countdownDidChange:(NSNotification *)notification {
 	Countdown *countdown = notification.object;
 	NSUInteger index = [_countdowns indexOfObject:countdown];
-	NSAssert(index != NSNotFound, @"all countdowns are contained in the global Preferences singleton");
-	[self didChangeCountdownsWithChangeType:PreferencesCountdownsChangeTypeUpdate atIndex:index];
+	NSAssert(index != NSNotFound, @"all countdowns are contained in the global CountdownStore singleton");
+	[self didChangeWithType:CountdownStoreChangeTypeUpdate atIndex:index];
 }
 
-- (void)didChangeCountdownsWithChangeType:(PreferencesCountdownsChangeType)changeType atIndex:(NSUInteger)index {
+- (void)didChangeWithType:(CountdownStoreChangeType)changeType atIndex:(NSUInteger)index {
 	NSMutableArray<id> *countdownsPropertyList = [NSMutableArray arrayWithCapacity:_countdowns.count];
 	for (Countdown *countdown in _countdowns) {
 		[countdownsPropertyList addObject:countdown.propertyList];
 	}
 	[NSUserDefaults.standardUserDefaults setObject:countdownsPropertyList forKey:CountdownsKey];
 
-	PreferencesCountdownsChange *change = [PreferencesCountdownsChange changeWithType:changeType index:index];
-	[NSNotificationCenter.defaultCenter postNotificationName:PreferencesCountdownsDidChangeNotification
+	CountdownStoreChange *change = [CountdownStoreChange changeWithType:changeType index:index];
+	[NSNotificationCenter.defaultCenter postNotificationName:CountdownStoreDidChangeNotification
 	                                                  object:nil
-	                                                userInfo:@{PreferencesCountdownsChangeKey : change}];
+	                                                userInfo:@{CountdownStoreChangeKey : change}];
 }
 
 @end
 
-@implementation PreferencesCountdownsChange
+@implementation CountdownStoreChange
 
-+ (instancetype)changeWithType:(PreferencesCountdownsChangeType)type index:(NSUInteger)index {
-	PreferencesCountdownsChange *change = [[PreferencesCountdownsChange alloc] init];
++ (instancetype)changeWithType:(CountdownStoreChangeType)type index:(NSUInteger)index {
+	CountdownStoreChange *change = [[CountdownStoreChange alloc] init];
 	change->_type = type;
 	change->_index = index;
 	return change;

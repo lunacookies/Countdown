@@ -129,7 +129,7 @@
 	_editWindowController = [[EditWindowController alloc] init];
 	_settingsWindowController = [[SettingsWindowController alloc] init];
 
-	NSArray<Countdown *> *countdowns = Preferences.sharedPreferences.countdowns;
+	NSArray<Countdown *> *countdowns = CountdownStore.sharedCountdownStore.countdowns;
 	_countdownStatusItems = [NSMutableArray arrayWithCapacity:countdowns.count];
 	for (Countdown *countdown in countdowns) {
 		NSStatusItem *statusItem = [self newStatusItem];
@@ -140,8 +140,13 @@
 	[self updateEmptyStateStatusItem];
 
 	[NSNotificationCenter.defaultCenter addObserver:self
-	                                       selector:@selector(preferencesCountdownsDidChange:)
-	                                           name:PreferencesCountdownsDidChangeNotification
+	                                       selector:@selector(countdownStoreDidChange:)
+	                                           name:CountdownStoreDidChangeNotification
+	                                         object:nil];
+
+	[NSNotificationCenter.defaultCenter addObserver:self
+	                                       selector:@selector(settingsDidChange:)
+	                                           name:SettingsDidChangeNotification
 	                                         object:nil];
 }
 
@@ -155,25 +160,25 @@
 	[NSApp activate];
 }
 
-- (void)preferencesCountdownsDidChange:(NSNotification *)notification {
-	PreferencesCountdownsChange *change = notification.userInfo[PreferencesCountdownsChangeKey];
+- (void)countdownStoreDidChange:(NSNotification *)notification {
+	CountdownStoreChange *change = notification.userInfo[CountdownStoreChangeKey];
 
 	switch (change.type) {
-		case PreferencesCountdownsChangeTypeInsert: {
-			Countdown *countdown = Preferences.sharedPreferences.countdowns[change.index];
+		case CountdownStoreChangeTypeInsert: {
+			Countdown *countdown = CountdownStore.sharedCountdownStore.countdowns[change.index];
 			NSStatusItem *statusItem = [self newStatusItem];
 			[_countdownStatusItems insertObject:statusItem atIndex:change.index];
 			[self configureStatusItem:statusItem forCountdown:countdown];
 			break;
 		}
 
-		case PreferencesCountdownsChangeTypeDelete: {
+		case CountdownStoreChangeTypeDelete: {
 			[_countdownStatusItems removeObjectAtIndex:change.index];
 			break;
 		}
 
-		case PreferencesCountdownsChangeTypeUpdate: {
-			Countdown *countdown = Preferences.sharedPreferences.countdowns[change.index];
+		case CountdownStoreChangeTypeUpdate: {
+			Countdown *countdown = CountdownStore.sharedCountdownStore.countdowns[change.index];
 			[self configureStatusItem:_countdownStatusItems[change.index] forCountdown:countdown];
 			break;
 		}
@@ -191,6 +196,16 @@
 	if (_emptyStateStatusItem == nil) {
 		_emptyStateStatusItem = [self newStatusItem];
 		[self configureStatusItem:_emptyStateStatusItem withTitle:@"No Countdowns"];
+	}
+}
+
+- (void)settingsDidChange:(NSNotification *)notification {
+	for (NSStatusItem *statusItem in _countdownStatusItems) {
+		[self configureStatusItem:statusItem withTitle:statusItem.button.title];
+	}
+
+	if (_emptyStateStatusItem != nil) {
+		[self configureStatusItem:_emptyStateStatusItem withTitle:_emptyStateStatusItem.button.title];
 	}
 }
 
@@ -212,15 +227,16 @@
 }
 
 - (void)configureStatusItem:(NSStatusItem *)statusItem withTitle:(NSString *)title {
-	CGFloat baselineOffset = 0.5;
-	CGFloat fontSize = 11;
+	CGFloat settingsFontSize = Settings.sharedSettings.fontSize;
+	CGFloat baselineOffset = -0.2 * settingsFontSize + 3.2;
+	CGFloat fontSize = settingsFontSize;
 	if ([title containsString:@"\n"]) {
-		baselineOffset = -4;
-		fontSize = 9;
+		baselineOffset = -0.6 * settingsFontSize + 2;
+		fontSize = 0.8 * settingsFontSize;
 	}
 
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.maximumLineHeight = 10;
+	paragraphStyle.maximumLineHeight = 0.9 * settingsFontSize;
 	statusItem.button.attributedTitle =
 	        [[NSAttributedString alloc] initWithString:title
 	                                        attributes:@{
