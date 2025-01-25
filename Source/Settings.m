@@ -38,6 +38,27 @@ static NSString *const FontSizeKey = @"FontSize";
 	[self didChange];
 }
 
+- (NSFont *)NSFontOfSize:(CGFloat)fontSize {
+	NSFontDescriptor *fontDescriptor = [NSFontDescriptor preferredFontDescriptorForTextStyle:NSFontTextStyleBody
+	                                                                                 options:@{}];
+	NSFontDescriptorSystemDesign design = 0;
+	Font settingsFont = Settings.sharedSettings.font;
+	if ([settingsFont isEqualToString:FontSystem]) {
+		design = NSFontDescriptorSystemDesignDefault;
+	} else if ([settingsFont isEqualToString:FontSystemSerif]) {
+		design = NSFontDescriptorSystemDesignSerif;
+	} else if ([settingsFont isEqualToString:FontSystemMonospace]) {
+		design = NSFontDescriptorSystemDesignMonospaced;
+	} else if ([settingsFont isEqualToString:FontSystemRounded]) {
+		design = NSFontDescriptorSystemDesignRounded;
+	} else {
+		NSAssert(NO, @"unreachable");
+	}
+
+	fontDescriptor = [fontDescriptor fontDescriptorWithDesign:design];
+	return [NSFont fontWithDescriptor:fontDescriptor size:fontSize];
+}
+
 - (void)didChange {
 	[NSNotificationCenter.defaultCenter postNotificationName:SettingsDidChangeNotification object:nil];
 }
