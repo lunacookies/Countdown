@@ -18,7 +18,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 }
 
 - (void)loadWindow {
-	self.window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 0, 0)
+	self.window = [[NSWindow alloc] initWithContentRect:(NSRect){0}
 	                                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
 	                                            backing:NSBackingStoreBuffered
 	                                              defer:YES];
