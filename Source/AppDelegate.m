@@ -237,10 +237,30 @@
 
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.maximumLineHeight = 0.9 * settingsFontSize;
+
+	NSFontDescriptor *fontDescriptor = [NSFontDescriptor preferredFontDescriptorForTextStyle:NSFontTextStyleBody
+	                                                                                 options:@{}];
+	NSFontDescriptorSystemDesign design = 0;
+	Font settingsFont = Settings.sharedSettings.font;
+	if ([settingsFont isEqualToString:FontSystem]) {
+		design = NSFontDescriptorSystemDesignDefault;
+	} else if ([settingsFont isEqualToString:FontSystemSerif]) {
+		design = NSFontDescriptorSystemDesignSerif;
+	} else if ([settingsFont isEqualToString:FontSystemMonospace]) {
+		design = NSFontDescriptorSystemDesignMonospaced;
+	} else if ([settingsFont isEqualToString:FontSystemRounded]) {
+		design = NSFontDescriptorSystemDesignRounded;
+	} else {
+		NSAssert(NO, @"unreachable");
+	}
+
+	fontDescriptor = [fontDescriptor fontDescriptorWithDesign:design];
+	NSFont *font = [NSFont fontWithDescriptor:fontDescriptor size:fontSize];
+
 	statusItem.button.attributedTitle =
 	        [[NSAttributedString alloc] initWithString:title
 	                                        attributes:@{
-		                                        NSFontAttributeName : [NSFont systemFontOfSize:fontSize],
+		                                        NSFontAttributeName : font,
 		                                        NSParagraphStyleAttributeName : paragraphStyle,
 		                                        NSBaselineOffsetAttributeName : @(baselineOffset),
 	                                        }];

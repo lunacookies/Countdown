@@ -1,10 +1,11 @@
 @implementation Settings
 
+static NSString *const FontKey = @"Font";
 static NSString *const FontSizeKey = @"FontSize";
 
 - (instancetype)init {
 	self = [super init];
-	[NSUserDefaults.standardUserDefaults registerDefaults:@{FontSizeKey : @11}];
+	[NSUserDefaults.standardUserDefaults registerDefaults:@{FontKey : FontSystem, FontSizeKey : @11}];
 	return self;
 }
 
@@ -17,6 +18,15 @@ static NSString *const FontSizeKey = @"FontSize";
 	});
 
 	return settings;
+}
+
+- (Font)font {
+	return [NSUserDefaults.standardUserDefaults stringForKey:FontKey];
+}
+
+- (void)setFont:(Font)font {
+	[NSUserDefaults.standardUserDefaults setObject:font forKey:FontKey];
+	[self didChange];
 }
 
 - (CGFloat)fontSize {
