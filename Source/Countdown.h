@@ -3,6 +3,7 @@
 - (instancetype)init NS_UNAVAILABLE;
 @property(nonatomic, copy) NSString *title;
 @property(nonatomic) NSDate *date;
+@property(nonatomic, readonly, copy) NSString *timeLeftString;
 @end
 
 @interface CountdownStore : NSObject

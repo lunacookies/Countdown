@@ -34,6 +34,15 @@
 	[self didChange];
 }
 
+- (NSString *)timeLeftString {
+	NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
+	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
+	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
+	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:self.date];
+	return [NSString stringWithFormat:@"%@ left", intervalString];
+}
+
 - (void)didChange {
 	[NSNotificationCenter.defaultCenter postNotificationName:CountdownDidChangeNotification object:self];
 }

@@ -210,17 +210,11 @@
 }
 
 - (void)configureStatusItem:(NSStatusItem *)statusItem forCountdown:(Countdown *)countdown {
-	NSDate *startOfToday = [NSCalendar.currentCalendar startOfDayForDate:[NSDate date]];
-	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
-	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
-	formatter.allowedUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-	NSString *intervalString = [formatter stringFromDate:startOfToday toDate:countdown.date];
-
 	NSString *title = nil;
 	if (countdown.title.length > 0) {
-		title = [NSString stringWithFormat:@"%@\n%@ left", countdown.title, intervalString];
+		title = [NSString stringWithFormat:@"%@\n%@", countdown.title, countdown.timeLeftString];
 	} else {
-		title = [NSString stringWithFormat:@"%@ left", intervalString];
+		title = countdown.timeLeftString;
 	}
 
 	[self configureStatusItem:statusItem withTitle:title];
