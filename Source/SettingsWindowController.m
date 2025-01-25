@@ -36,6 +36,9 @@
 	fontRadioButtons.orientation = NSUserInterfaceLayoutOrientationVertical;
 	fontRadioButtons.alignment = NSLayoutAttributeLeading;
 
+	// 6pt between radio buttons in a group (2009 Mac HIG, page 282)
+	fontRadioButtons.spacing = 6;
+
 	CGFloat minValue = 8;
 	CGFloat maxValue = 15;
 	_fontSizeSlider = [NSSlider sliderWithValue:11
@@ -54,16 +57,22 @@
 	gridView.rowAlignment = NSGridRowAlignmentFirstBaseline;
 	[gridView columnAtIndex:0].xPlacement = NSGridCellPlacementTrailing;
 
+	// 8pt between labels and controls (2009 Mac HIG, page 282)
+	gridView.columnSpacing = 8;
+
+	// 8pt between discrete controls (2009 Mac HIG, page 349)
+	gridView.rowSpacing = 8;
 
 	NSView *contentView = self.window.contentView;
 	gridView.translatesAutoresizingMaskIntoConstraints = NO;
 	[contentView addSubview:gridView];
-	NSLayoutGuide *guide = contentView.layoutMarginsGuide;
+
+	// 20pt padding inside windows except for top, which is 14pt (2009 Mac HIG, pages 349 and 350)
 	[NSLayoutConstraint activateConstraints:@[
-		[gridView.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[gridView.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
-		[gridView.leadingAnchor constraintEqualToAnchor:guide.leadingAnchor],
-		[gridView.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
+		[gridView.topAnchor constraintEqualToAnchor:contentView.topAnchor constant:14],
+		[gridView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor constant:-20],
+		[gridView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor constant:20],
+		[gridView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor constant:-20],
 	]];
 
 	[self.window layoutIfNeeded];

@@ -28,14 +28,19 @@
 	gridView.rowAlignment = NSGridRowAlignmentFirstBaseline;
 	[gridView columnAtIndex:0].xPlacement = NSGridCellPlacementTrailing;
 
+	// 8pt between labels and controls (2009 Mac HIG, page 282)
+	gridView.columnSpacing = 8;
+
+	// 8pt between discrete controls (2009 Mac HIG, page 349)
+	gridView.rowSpacing = 8;
+
 	gridView.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:gridView];
-	NSLayoutGuide *guide = self.view.layoutMarginsGuide;
 	[NSLayoutConstraint activateConstraints:@[
-		[gridView.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[gridView.bottomAnchor constraintLessThanOrEqualToAnchor:guide.bottomAnchor],
-		[gridView.leadingAnchor constraintEqualToAnchor:guide.leadingAnchor],
-		[gridView.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
+		[gridView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+		[gridView.bottomAnchor constraintLessThanOrEqualToAnchor:self.view.bottomAnchor],
+		[gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+		[gridView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
 		[_titleField.widthAnchor constraintEqualToConstant:200],
 	]];
 }

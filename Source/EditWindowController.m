@@ -52,11 +52,14 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	_noSelectionLabel.translatesAutoresizingMaskIntoConstraints = NO;
 	[box addSubview:_editorViewController.view];
 	[box addSubview:_noSelectionLabel];
+
 	[NSLayoutConstraint activateConstraints:@[
-		[_editorViewController.view.topAnchor constraintEqualToAnchor:box.topAnchor],
-		[_editorViewController.view.bottomAnchor constraintEqualToAnchor:box.bottomAnchor],
-		[_editorViewController.view.leadingAnchor constraintEqualToAnchor:box.leadingAnchor],
-		[_editorViewController.view.trailingAnchor constraintEqualToAnchor:box.trailingAnchor],
+		// 16pt padding inside group boxes except for top, which is 10pt (2009 Mac HIG, page 352)
+		[_editorViewController.view.topAnchor constraintEqualToAnchor:box.topAnchor constant:10],
+		[_editorViewController.view.bottomAnchor constraintEqualToAnchor:box.bottomAnchor constant:-16],
+		[_editorViewController.view.leadingAnchor constraintEqualToAnchor:box.leadingAnchor constant:16],
+		[_editorViewController.view.trailingAnchor constraintEqualToAnchor:box.trailingAnchor constant:-16],
+
 		[_noSelectionLabel.leadingAnchor constraintEqualToAnchor:_editorViewController.view.leadingAnchor],
 		[_noSelectionLabel.trailingAnchor constraintEqualToAnchor:_editorViewController.view.trailingAnchor],
 		[_noSelectionLabel.centerYAnchor constraintEqualToAnchor:_editorViewController.view.centerYAnchor],
@@ -80,15 +83,15 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	[contentView addSubview:addButton];
 	[contentView addSubview:_removeButton];
 
-	NSLayoutGuide *guide = contentView.layoutMarginsGuide;
+	// 20pt padding inside windows except for top, which is 14pt (2009 Mac HIG, pages 349 and 350)
 	[NSLayoutConstraint activateConstraints:@[
-		[scrollView.topAnchor constraintEqualToAnchor:guide.topAnchor],
-		[scrollView.leadingAnchor constraintEqualToAnchor:guide.leadingAnchor],
+		[scrollView.topAnchor constraintEqualToAnchor:contentView.topAnchor constant:14],
+		[scrollView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor constant:20],
 		[_tableView.widthAnchor constraintEqualToConstant:200],
 		[_tableView.heightAnchor constraintEqualToConstant:300],
 
 		[addButton.topAnchor constraintEqualToAnchor:scrollView.bottomAnchor constant:10],
-		[addButton.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor],
+		[addButton.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor constant:-20],
 		[addButton.leadingAnchor constraintEqualToAnchor:scrollView.leadingAnchor],
 
 		[_removeButton.centerYAnchor constraintEqualToAnchor:addButton.centerYAnchor],
@@ -97,7 +100,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 		[box.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
 		[box.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
 		[box.leadingAnchor constraintEqualToAnchor:scrollView.trailingAnchor constant:10],
-		[box.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor],
+		[box.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor constant:-20],
 	]];
 
 	[self.window layoutIfNeeded];
