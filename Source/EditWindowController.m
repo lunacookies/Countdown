@@ -87,8 +87,8 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	[NSLayoutConstraint activateConstraints:@[
 		[scrollView.topAnchor constraintEqualToAnchor:contentView.topAnchor constant:14],
 		[scrollView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor constant:20],
-		[_tableView.widthAnchor constraintEqualToConstant:200],
-		[_tableView.heightAnchor constraintEqualToConstant:300],
+		[scrollView.widthAnchor constraintEqualToConstant:200],
+		[scrollView.heightAnchor constraintEqualToConstant:300],
 
 		[addButton.topAnchor constraintEqualToAnchor:scrollView.bottomAnchor constant:10],
 		[addButton.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor constant:-20],
