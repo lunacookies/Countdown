@@ -1,0 +1,2 @@
+@interface WidgetWindowController : NSWindowController
+@end

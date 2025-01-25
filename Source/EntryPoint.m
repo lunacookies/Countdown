@@ -11,6 +11,7 @@ static const NSNotificationName SettingsDidChangeNotification = @"org.xoria.Coun
 #include "Countdown.h"
 #include "Settings.h"
 #include "EditWindowController.h"
+#include "WidgetWindowController.h"
 #include "SettingsWindowController.h"
 #include "CountdownEditorViewController.h"
 
@@ -18,6 +19,7 @@ static const NSNotificationName SettingsDidChangeNotification = @"org.xoria.Coun
 #include "Countdown.m"
 #include "Settings.m"
 #include "EditWindowController.m"
+#include "WidgetWindowController.m"
 #include "SettingsWindowController.m"
 #include "CountdownEditorViewController.m"
 

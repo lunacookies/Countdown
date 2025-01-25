@@ -1,5 +1,6 @@
 @implementation AppDelegate {
 	EditWindowController *_editWindowController;
+	WidgetWindowController *_widgetWindowController;
 	SettingsWindowController *_settingsWindowController;
 	NSMutableArray<NSStatusItem *> *_countdownStatusItems;
 	NSStatusItem *_emptyStateStatusItem;
@@ -127,6 +128,7 @@
 	NSApp.mainMenu = mainMenu;
 
 	_editWindowController = [[EditWindowController alloc] init];
+	_widgetWindowController = [[WidgetWindowController alloc] init];
 	_settingsWindowController = [[SettingsWindowController alloc] init];
 
 	NSArray<Countdown *> *countdowns = CountdownStore.sharedCountdownStore.countdowns;
@@ -152,6 +154,11 @@
 
 - (void)editCountdowns:(id)sender {
 	[_editWindowController showWindow:nil];
+	[NSApp activate];
+}
+
+- (void)showWidget:(id)sender {
+	[_widgetWindowController showWindow:nil];
 	[NSApp activate];
 }
 
@@ -247,6 +254,7 @@
 	NSStatusItem *statusItem = [NSStatusBar.systemStatusBar statusItemWithLength:NSVariableStatusItemLength];
 	NSMenu *menu = [[NSMenu alloc] init];
 	[menu addItemWithTitle:@"Edit Countdowns…" action:@selector(editCountdowns:) keyEquivalent:@""];
+	[menu addItemWithTitle:@"Widget" action:@selector(showWidget:) keyEquivalent:@""];
 	[menu addItemWithTitle:@"Settings…" action:@selector(showSettings:) keyEquivalent:@","];
 	[menu addItem:[NSMenuItem separatorItem]];
 
