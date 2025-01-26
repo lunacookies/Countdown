@@ -92,6 +92,8 @@ static const NSUserInterfaceItemIdentifier WidgetCountdownItemIdentifier = @"org
 	]];
 
 	self.window.contentView = widgetWrapperView;
+
+	self.windowFrameAutosaveName = WidgetWindowIdentifier;
 }
 
 - (void)windowDidLoad {

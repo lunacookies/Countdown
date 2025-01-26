@@ -78,6 +78,8 @@
 
 	[self.window layoutIfNeeded];
 	[self.window center];
+
+	self.windowFrameAutosaveName = SettingsWindowIdentifier;
 }
 
 - (void)windowDidLoad {

@@ -107,6 +107,8 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 
 	[self.window layoutIfNeeded];
 	[self.window center];
+
+	self.windowFrameAutosaveName = EditWindowIdentifier;
 }
 
 - (void)windowDidLoad {
