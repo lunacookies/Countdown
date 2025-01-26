@@ -25,6 +25,7 @@ static const NSUserInterfaceItemIdentifier WidgetCountdownItemIdentifier = @"org
 	                                              NSWindowStyleMaskResizable | NSWindowStyleMaskFullSizeContentView
 	                                      backing:NSBackingStoreBuffered
 	                                        defer:YES];
+	self.window.identifier = WidgetWindowIdentifier;
 	self.window.title = @"Countdowns";
 	self.window.level = CGWindowLevelForKey(kCGBackstopMenuLevelKey);
 	self.window.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorTransient;

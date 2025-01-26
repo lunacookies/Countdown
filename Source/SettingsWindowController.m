@@ -15,6 +15,7 @@
 	                                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
 	                                            backing:NSBackingStoreBuffered
 	                                              defer:YES];
+	self.window.identifier = SettingsWindowIdentifier;
 	self.window.title = @"Countdown Settings";
 
 	_systemFontRadioButton = [NSButton radioButtonWithTitle:@"System" target:self action:@selector(didSelectFont:)];

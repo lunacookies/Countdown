@@ -1,9 +1,32 @@
+@interface AppDelegate () <NSWindowRestoration>
+@end
+
 @implementation AppDelegate {
 	EditWindowController *_editWindowController;
 	WidgetWindowController *_widgetWindowController;
 	SettingsWindowController *_settingsWindowController;
 	NSMutableArray<NSStatusItem *> *_countdownStatusItems;
 	NSStatusItem *_emptyStateStatusItem;
+}
+
+- (instancetype)init {
+	self = [super init];
+
+	_editWindowController = [[EditWindowController alloc] init];
+	_widgetWindowController = [[WidgetWindowController alloc] init];
+	_settingsWindowController = [[SettingsWindowController alloc] init];
+
+	_editWindowController.window.restorationClass = [self class];
+	_widgetWindowController.window.restorationClass = [self class];
+	_settingsWindowController.window.restorationClass = [self class];
+
+	// Adding `LSUIElement` to the `Info.plist` disables Resume for some reason,
+	// so we set the activation policy here at runtime instead. In particular,
+	// we have to set the windows’ restoration classes _before_ setting the
+	// activation policy.
+	NSApp.activationPolicy = NSApplicationActivationPolicyAccessory;
+
+	return self;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
@@ -126,10 +149,6 @@
 	}
 
 	NSApp.mainMenu = mainMenu;
-
-	_editWindowController = [[EditWindowController alloc] init];
-	_widgetWindowController = [[WidgetWindowController alloc] init];
-	_settingsWindowController = [[SettingsWindowController alloc] init];
 
 	NSArray<Countdown *> *countdowns = CountdownStore.sharedCountdownStore.countdowns;
 	_countdownStatusItems = [NSMutableArray arrayWithCapacity:countdowns.count];
@@ -265,6 +284,23 @@
 
 	statusItem.menu = menu;
 	return statusItem;
+}
+
++ (void)restoreWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier
+                              state:(NSCoder *)state
+                  completionHandler:(void (^)(NSWindow *, NSError *))completionHandler {
+	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+
+	NSWindow *window = nil;
+	if ([identifier isEqualToString:EditWindowIdentifier]) {
+		window = appDelegate->_editWindowController.window;
+	} else if ([identifier isEqualToString:WidgetWindowIdentifier]) {
+		window = appDelegate->_widgetWindowController.window;
+	} else if ([identifier isEqualToString:SettingsWindowIdentifier]) {
+		window = appDelegate->_settingsWindowController.window;
+	}
+
+	completionHandler(window, nil);
 }
 
 @end

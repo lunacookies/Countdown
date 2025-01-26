@@ -22,6 +22,7 @@ static NSString *const CountdownCellViewIdentifier = @"org.xoria.Countdown.Count
 	                                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
 	                                            backing:NSBackingStoreBuffered
 	                                              defer:YES];
+	self.window.identifier = EditWindowIdentifier;
 	self.window.title = @"Edit Countdowns";
 
 	_tableView = [[NSTableView alloc] init];
