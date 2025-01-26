@@ -93,6 +93,20 @@ static NSString *const CountdownsKey = @"Countdowns";
 	                                           name:CountdownDidChangeNotification
 	                                         object:nil];
 
+	// Tell observers that all timers are updated every hour
+	// so we get up-to-date “x days left” strings in the UI.
+	NSTimeInterval hour = 60 * 60;
+	NSTimer *timer = [NSTimer
+	        scheduledTimerWithTimeInterval:hour
+	                               repeats:YES
+	                                 block:^(NSTimer *timer_) {
+		                                 (void)timer_;
+		                                 for (NSUInteger index = 0; index < _countdowns.count; index++) {
+			                                 [self didChangeWithType:CountdownStoreChangeTypeUpdate atIndex:index];
+		                                 }
+	                                 }];
+	timer.tolerance = hour / 2;
+
 	return self;
 }
 
