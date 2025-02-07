@@ -4,6 +4,7 @@
 	NSButton *_systemMonospaceFontRadioButton;
 	NSButton *_systemRoundedFontRadioButton;
 	NSSlider *_fontSizeSlider;
+	NSSlider *_fontWeightSlider;
 }
 
 - (instancetype)init {
@@ -40,19 +41,28 @@
 	// 6pt between radio buttons in a group (2009 Mac HIG, page 282)
 	fontRadioButtons.spacing = 6;
 
-	CGFloat minValue = 8;
-	CGFloat maxValue = 15;
+	CGFloat minimumFontSize = 8;
+	CGFloat maximumFontSize = 15;
 	_fontSizeSlider = [NSSlider sliderWithValue:11
-	                                   minValue:minValue
-	                                   maxValue:maxValue
+	                                   minValue:minimumFontSize
+	                                   maxValue:maximumFontSize
 	                                     target:self
 	                                     action:@selector(fontSizeSliderDidChange:)];
 	_fontSizeSlider.allowsTickMarkValuesOnly = YES;
-	_fontSizeSlider.numberOfTickMarks = (NSInteger)(maxValue - minValue + 1); // Fencepost Problem
+	_fontSizeSlider.numberOfTickMarks = (NSInteger)(maximumFontSize - minimumFontSize + 1); // Fencepost Problem
+
+	_fontWeightSlider = [NSSlider sliderWithValue:0
+	                                     minValue:0
+	                                     maxValue:1
+	                                       target:self
+	                                       action:@selector(fontWeightSliderDidChange:)];
+	_fontWeightSlider.allowsTickMarkValuesOnly = YES;
+	_fontWeightSlider.numberOfTickMarks = 8;
 
 	NSGridView *gridView = [NSGridView gridViewWithViews:@[
 		@[ [NSTextField labelWithString:@"Font:"], fontRadioButtons ],
 		@[ [NSTextField labelWithString:@"Font Size:"], _fontSizeSlider ],
+		@[ [NSTextField labelWithString:@"Font Weight:"], _fontWeightSlider ],
 	]];
 
 	gridView.rowAlignment = NSGridRowAlignmentFirstBaseline;
@@ -104,6 +114,10 @@
 	Settings.sharedSettings.fontSize = (CGFloat)_fontSizeSlider.doubleValue;
 }
 
+- (void)fontWeightSliderDidChange:(NSSlider *)fontWeightSlider {
+	Settings.sharedSettings.fontWeight = (CGFloat)_fontWeightSlider.doubleValue;
+}
+
 - (void)settingsDidChange:(NSNotification *)notification {
 	Font font = Settings.sharedSettings.font;
 	if ([font isEqualToString:FontSystem]) {
@@ -119,6 +133,7 @@
 	}
 
 	_fontSizeSlider.doubleValue = Settings.sharedSettings.fontSize;
+	_fontWeightSlider.doubleValue = Settings.sharedSettings.fontWeight;
 }
 
 @end

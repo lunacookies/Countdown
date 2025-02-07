@@ -258,7 +258,7 @@
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.maximumLineHeight = 0.9 * settingsFontSize;
 
-	NSFont *font = [Settings.sharedSettings NSFontOfSize:fontSize];
+	NSFont *font = [Settings.sharedSettings NSFontOfSize:fontSize weight:Settings.sharedSettings.fontWeight];
 
 	statusItem.button.attributedTitle =
 	        [[NSAttributedString alloc] initWithString:title

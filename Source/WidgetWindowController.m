@@ -214,7 +214,6 @@ static const NSUserInterfaceItemIdentifier WidgetCountdownItemIdentifier = @"org
 	_timeLeftLabel = [NSTextField labelWithString:@""];
 	_timeLeftLabel.alignment = NSTextAlignmentRight;
 	_timeLeftLabel.allowsDefaultTighteningForTruncation = YES;
-	_timeLeftLabel.textColor = NSColor.tertiaryLabelColor;
 
 	background.translatesAutoresizingMaskIntoConstraints = NO;
 	_titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -247,9 +246,9 @@ static const NSUserInterfaceItemIdentifier WidgetCountdownItemIdentifier = @"org
 - (void)setCountdown:(Countdown *)countdown {
 	_countdown = countdown;
 	_titleLabel.stringValue = countdown.title;
-	_titleLabel.font = [Settings.sharedSettings NSFontOfSize:13];
+	_titleLabel.font = [Settings.sharedSettings NSFontOfSize:13 weight:Settings.sharedSettings.fontWeight];
 	_timeLeftLabel.stringValue = countdown.timeLeftString;
-	_timeLeftLabel.font = [Settings.sharedSettings NSFontOfSize:11];
+	_timeLeftLabel.font = [Settings.sharedSettings NSFontOfSize:13 weight:Settings.sharedSettings.fontWeight + 0.2];
 }
 
 @end

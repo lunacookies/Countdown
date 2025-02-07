@@ -8,5 +8,6 @@ static const Font FontSystemRounded = @"FontSystemRounded";
 @property(class, readonly) Settings *sharedSettings;
 @property(nonatomic) Font font;
 @property(nonatomic) CGFloat fontSize;
-- (NSFont *)NSFontOfSize:(CGFloat)fontSize;
+@property(nonatomic) CGFloat fontWeight;
+- (NSFont *)NSFontOfSize:(CGFloat)fontSize weight:(CGFloat)fontWeight;
 @end

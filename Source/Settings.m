@@ -2,10 +2,12 @@
 
 static NSString *const FontKey = @"Font";
 static NSString *const FontSizeKey = @"FontSize";
+static NSString *const FontWeightKey = @"FontWeight";
 
 - (instancetype)init {
 	self = [super init];
-	[NSUserDefaults.standardUserDefaults registerDefaults:@{FontKey : FontSystem, FontSizeKey : @11}];
+	[NSUserDefaults.standardUserDefaults
+	        registerDefaults:@{FontKey : FontSystem, FontSizeKey : @11, FontWeightKey : @0.2}];
 	return self;
 }
 
@@ -38,7 +40,16 @@ static NSString *const FontSizeKey = @"FontSize";
 	[self didChange];
 }
 
-- (NSFont *)NSFontOfSize:(CGFloat)fontSize {
+- (CGFloat)fontWeight {
+	return (CGFloat)[NSUserDefaults.standardUserDefaults doubleForKey:FontWeightKey];
+}
+
+- (void)setFontWeight:(CGFloat)fontWeight {
+	[NSUserDefaults.standardUserDefaults setDouble:(double)fontWeight forKey:FontWeightKey];
+	[self didChange];
+}
+
+- (NSFont *)NSFontOfSize:(CGFloat)fontSize weight:(CGFloat)fontWeight {
 	NSFontDescriptor *fontDescriptor = [NSFontDescriptor preferredFontDescriptorForTextStyle:NSFontTextStyleBody
 	                                                                                 options:@{}];
 	NSFontDescriptorSystemDesign design = 0;
@@ -56,6 +67,8 @@ static NSString *const FontSizeKey = @"FontSize";
 	}
 
 	fontDescriptor = [fontDescriptor fontDescriptorWithDesign:design];
+	fontDescriptor = [fontDescriptor
+	        fontDescriptorByAddingAttributes:@{NSFontTraitsAttribute : @{NSFontWeightTrait : @(fontWeight)}}];
 	return [NSFont fontWithDescriptor:fontDescriptor size:fontSize];
 }
 
